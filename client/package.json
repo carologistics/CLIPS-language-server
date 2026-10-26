@@ -1,0 +1,69 @@
+{
+  "name": "clips-language-client",
+  "displayName": "CLIPS Language Support",
+  "description": "Language client for the CLIPS language server",
+  "version": "0.0.1",
+  "private": true,
+  "publisher": "local-dev",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Programming Languages"],
+  "activationEvents": ["workspaceContains:**/*.{clp,CLP,clpd}"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "clips",
+        "aliases": ["CLIPS", "clips"],
+        "extensions": [".clp", ".CLP", ".clpd"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "configuration": {
+      "title": "CLIPS",
+      "properties": {
+        "clips.diagnostics.scope": {
+          "type": "string",
+          "enum": ["openFiles", "workspace"],
+          "enumDescriptions": [
+            "Show errors and warnings only for CLIPS files that are open in an editor.",
+            "Show errors and warnings for every .clp file in the workspace, including files that are not open."
+          ],
+          "default": "openFiles",
+          "scope": "window",
+          "description": "Which CLIPS files get errors and warnings reported in the Problems panel."
+        },
+        "clips.completion.snippets": {
+          "type": "boolean",
+          "default": true,
+          "scope": "window",
+          "description": "Insert argument placeholders and construct skeletons when accepting a completion. Turn off to insert plain names only."
+        },
+        "clips.completion.unlinkedFiles": {
+          "type": "string",
+          "enum": ["include", "exclude"],
+          "enumDescriptions": [
+            "Also suggest deftemplates, functions, classes and globals from other files, labelled as not linked by any load.",
+            "Suggest only the file's own constructs."
+          ],
+          "default": "include",
+          "scope": "window",
+          "description": "For a CLIPS file that no (load ...) links to other files: whether completion suggests constructs from the rest of the workspace. Files that are part of a known program always get exactly that program's constructs."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "watch": "tsc -p . --watch"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.7.0"
+  }
+}

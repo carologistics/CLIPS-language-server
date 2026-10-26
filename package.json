@@ -1,0 +1,34 @@
+{
+  "name": "clips-language-server",
+  "version": "0.0.1",
+  "description": "Language Server for CLIPS",
+  "type": "module",
+  "main": "dist/server.js",
+  "bin": {
+    "clips-language-server": "dist/server.js"
+  },
+  "files": [
+    "dist",
+    "data"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p .",
+    "prepare": "npm run build",
+    "watch": "tsc -p . --watch",
+    "start": "node dist/server.js --stdio"
+  },
+  "dependencies": {
+    "tree-sitter": "^0.25.0",
+    "tree-sitter-clips": "file:../tree-sitter-CLIPS",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.12"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}

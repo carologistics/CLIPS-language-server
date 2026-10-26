@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build server",
+      "type": "shell",
+      "command": "npm run build",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "build client",
+      "type": "shell",
+      "command": "npm run build",
+      "options": { "cwd": "${workspaceFolder}/client" },
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "build",
+      "dependsOn": ["build server", "build client"],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    }
+  ]
+}
