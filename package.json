@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "tree-sitter": "^0.25.0",
-    "tree-sitter-clips": "file:../tree-sitter-CLIPS",
+    "tree-sitter-clips": "file:../Tree-Sitter-CLIPS",
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.12"
   },

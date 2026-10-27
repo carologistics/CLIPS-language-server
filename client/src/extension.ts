@@ -1,5 +1,10 @@
 /**
- * @file VS Code client: starts `dist/server.js` over IPC for CLIPS documents.
+ * @file VS Code client: starts `dist/server.js` with the system Node.js over
+ * stdio for CLIPS documents.
+ *
+ * The server is run with the system `node` rather than VS Code's built-in
+ * Electron runtime, because the native tree-sitter bindings can crash
+ * (SIGSEGV) under Electron.
  */
 
 import * as path from 'node:path';
@@ -7,8 +12,7 @@ import type { ExtensionContext } from 'vscode';
 import {
   LanguageClient,
   type LanguageClientOptions,
-  type ServerOptions,
-  TransportKind
+  type ServerOptions
 } from 'vscode-languageclient/node';
 
 /** The running client, stopped in {@link deactivate}. */
@@ -23,11 +27,13 @@ export function activate(context: ExtensionContext): void {
   const serverModule = context.asAbsolutePath(path.join('..', 'dist', 'server.js'));
 
   const serverOptions: ServerOptions = {
-    run: { module: serverModule, transport: TransportKind.ipc },
+    run: {
+      command: 'node',
+      args: [serverModule, '--stdio']
+    },
     debug: {
-      module: serverModule,
-      transport: TransportKind.ipc,
-      options: { execArgv: ['--nolazy', '--inspect=6009'] }
+      command: 'node',
+      args: ['--nolazy', '--inspect=6009', serverModule, '--stdio']
     }
   };
 

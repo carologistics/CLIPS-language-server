@@ -1,6 +1,6 @@
 # CLIPS Language Server
 
-A [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) server for [CLIPS](https://www.clipsrules.net/) 6.4.2, built on the [tree-sitter-CLIPS]() grammar. It speaks plain LSP over stdio, so it works in any editor with an LSP client.
+A [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) server for [CLIPS](https://www.clipsrules.net/) 6.4.2, built on the [tree-sitter-CLIPS](https://github.com/carologistics/Tree-Sitter-CLIPS) grammar. It speaks plain LSP over stdio, so it works in any editor with an LSP client.
 
 ## Features
 
@@ -13,19 +13,38 @@ A [Language Server Protocol](https://microsoft.github.io/language-server-protoco
 
 ## Requirements
 
-- Node.js 20 or later
+- Node.js 20 or later, along with npm 
 - A C compiler toolchain (the grammar is a native Node addon compiled on install): Visual Studio Build Tools on Windows, Xcode Command Line Tools on macOS, `gcc`/`make` on Linux
 
 ## Building
 
-```sh
+The grammar is referenced as a sibling checkout (`../Tree-Sitter-CLIPS`, see `package.json`), so clone both repositories into the same parent folder.
+
+Build the grammar first, then the server:
+
+```
+cd Tree-Sitter-CLIPS
+npm install
+cd ../CLIPS-language-server
 npm install
 npm run build
 ```
 
-The grammar is currently referenced as a sibling checkout (same parent folder,`../tree-sitter-CLIPS`, see `package.json`).
+This produces `dist/server.js`.
 
-This produces `dist/server.js`. To get a `clips-language-server` command on your `PATH`, run `npm link` in this directory. Without it, editors can run `node /path/to/clips-language-server/dist/server.js --stdio` instead.
+### Putting the server on your PATH
+
+To get a `clips-language-server` command on your `PATH`, run `npm link` in this directory. With Ubuntu's npm, this needs `sudo`:
+
+```
+npm link
+```
+
+Without linking, editors can run the server directly:
+
+```
+node /full/path/to/CLIPS-language-server/dist/server.js --stdio
+```
 
 ## Editor setup
 
@@ -33,7 +52,14 @@ The server is started as `clips-language-server --stdio`. File types: `.clp`, `.
 
 ### VS Code
 
-The extension in [client/](client/) is still in development. Open this repository in VS Code and press F5 ("Launch CLIPS Client") to start an Extension Development Host with the server attached. Settings go in `settings.json` under `clips.*`.
+The extension in [client/](client/) is still in development. To try it:
+
+1. Run `npm install` inside `client/` first. Otherwise the extension fails with "Cannot find module 'vscode'" errors.
+2. Open this repository in VS Code and press F5 ("Launch CLIPS Client") to start an Extension Development Host with the server attached.
+
+Settings go in `settings.json` under `clips.*`.
+
+**Linux**: do not use the snap version of VS Code. It loads an old `libstdc++` from `/snap/core20`, and the server crashes with `GLIBCXX_3.4.31 not found`. Install the `.deb` from [code.visualstudio.com](https://code.visualstudio.com/) instead.
 
 ### Neovim (0.11+)
 
@@ -52,6 +78,17 @@ vim.lsp.config('clips', {
 })
 vim.lsp.enable('clips')
 ```
+
+If you did not run `npm link`, point `cmd` at the built server instead. It must be a list of quoted strings with the full path (`~` is not expanded):
+
+```lua
+cmd = { 'node', '/full/path/to/CLIPS-language-server/dist/server.js', '--stdio' },
+```
+
+Usage notes:
+
+- With autotrigger enabled, completion only opens on trigger characters such as `(`. Press `Ctrl+X Ctrl+O` to request it manually, or add letters as trigger characters in your `LspAttach` callback.
+- Hover is `K` (Shift+K) in normal mode.
 
 ### Helix
 
@@ -89,5 +126,3 @@ The server reads settings with `workspace/configuration` and picks up changes th
 | `clips.diagnostics.scope` | `openFiles`, `workspace` | `openFiles` | Report errors and warnings only for open files, or for every `.clp` file in the workspace. |
 | `clips.completion.snippets` | `true`, `false` | `true` | Insert argument placeholders and construct skeletons when accepting a completion. Turn off to insert plain names. Only applies if the client supports snippets. |
 | `clips.completion.unlinkedFiles` | `include`, `exclude` | `include` | For a file that no `(load ...)` links to other files: whether completion also suggests constructs from the rest of the workspace. Files that are part of a known program always get exactly that program's constructs. |
-
-
